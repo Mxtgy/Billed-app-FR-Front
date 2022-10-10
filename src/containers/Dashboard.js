@@ -6,6 +6,7 @@ import USERS_TEST from '../constants/usersTest.js'
 import Logout from "./Logout.js"
 
 export const filteredBills = (data, status) => {
+  console.log(document)
   return (data && data.length) ?
     data.filter(bill => {
       let selectCondition
@@ -146,7 +147,7 @@ export default class {
     }
 
     bills.forEach(bill => {
-      $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
+      $(`#open-bill${bill.id}`).unbind('click').click((e) => this.handleEditTicket(e, bill, bills))
     })
 
     return bills
