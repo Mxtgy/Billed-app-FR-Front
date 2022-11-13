@@ -15,12 +15,22 @@ export default class NewBill {
     this.billId = null
     new Logout({ document, localStorage, onNavigate })
   }
+
+  checkFile = file => {
+    const allowedExtensions = ['image/jpeg', 'image/jpg', 'image/png']
+    if (!allowedExtensions.includes(file.type)) {
+      throw new Error('Not the right file type')
+    }
+  }
+
   handleChangeFile = e => {
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
-    console.log(file)
+    
+    this.checkFile(file)
+    
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
@@ -45,6 +55,13 @@ export default class NewBill {
     e.preventDefault()
     console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
     const email = JSON.parse(localStorage.getItem("user")).email
+    const json = JSON.parse(localStorage.getItem("user"))
+    const email1 = json
+    const email2 = json["email"]
+    const email3 = json.email
+    console.log(email1)
+    console.log(email2)
+    console.log(email3)
     const bill = {
       email,
       type: e.target.querySelector(`select[data-testid="expense-type"]`).value,
@@ -58,6 +75,10 @@ export default class NewBill {
       fileName: this.fileName,
       status: 'pending'
     }
+    console.log(bill)
+
+    //Why not put a warning here if there is no file ?
+
     this.updateBill(bill)
     this.onNavigate(ROUTES_PATH['Bills'])
   }
