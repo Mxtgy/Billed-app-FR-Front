@@ -27,17 +27,13 @@ export default class NewBill {
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const fileTest = this.document.querySelector(`input[data-testid="file"]`)
-    console.log(fileTest)
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
     
     this.checkFile(file)
     
     const formData = new FormData()
-    /*const email = JSON.parse(localStorage.getItem("user")).email*/
-    const local = localStorage.getItem("user")
-    const json = JSON.parse(local)
-    const email = JSON.parse(json).email
+    const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
     formData.append('email', email)
 
@@ -59,10 +55,7 @@ export default class NewBill {
   handleSubmit = e => {
     e.preventDefault()
     console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
-    /*const email = JSON.parse(localStorage.getItem("user")).email*/
-    const local = localStorage.getItem("user")
-    const json = JSON.parse(local)
-    const email = JSON.parse(json).email
+    const email = JSON.parse(localStorage.getItem("user")).email
 
     const bill = {
       email,
@@ -77,7 +70,6 @@ export default class NewBill {
       fileName: this.fileName,
       status: 'pending'
     }
-    console.log(bill)
 
     //Why not put a warning here if there is no file ?
 
