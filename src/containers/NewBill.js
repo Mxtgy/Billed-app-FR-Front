@@ -26,13 +26,18 @@ export default class NewBill {
   handleChangeFile = e => {
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+    const fileTest = this.document.querySelector(`input[data-testid="file"]`)
+    console.log(fileTest)
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
     
     this.checkFile(file)
     
     const formData = new FormData()
-    const email = JSON.parse(localStorage.getItem("user")).email
+    /*const email = JSON.parse(localStorage.getItem("user")).email*/
+    const local = localStorage.getItem("user")
+    const json = JSON.parse(local)
+    const email = JSON.parse(json).email
     formData.append('file', file)
     formData.append('email', email)
 
@@ -54,14 +59,11 @@ export default class NewBill {
   handleSubmit = e => {
     e.preventDefault()
     console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
-    const email = JSON.parse(localStorage.getItem("user")).email
-    const json = JSON.parse(localStorage.getItem("user"))
-    const email1 = json
-    const email2 = json["email"]
-    const email3 = json.email
-    console.log(email1)
-    console.log(email2)
-    console.log(email3)
+    /*const email = JSON.parse(localStorage.getItem("user")).email*/
+    const local = localStorage.getItem("user")
+    const json = JSON.parse(local)
+    const email = JSON.parse(json).email
+
     const bill = {
       email,
       type: e.target.querySelector(`select[data-testid="expense-type"]`).value,

@@ -2,16 +2,14 @@
  * @jest-environment jsdom
  */
 
-import { fireEvent, screen, waitFor } from "@testing-library/dom"
+import { fireEvent, screen } from "@testing-library/dom"
 import userEvent from '@testing-library/user-event'
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
-import Bills from "../containers/Bills.js"
-import BillsUI from "../views/BillsUI.js"
-import { bills } from "../fixtures/bills.js"
 import { ROUTES, ROUTES_PATH} from "../constants/routes.js"
 import {localStorageMock} from "../__mocks__/localStorage.js"
 import mockStore from "../__mocks__/store"
+import realStore from "../app/Store.js"
 
 import router from "../app/Router.js"
 
@@ -75,10 +73,23 @@ describe("Given I am connected as an employee", () => {
   })
 })
 
-
 describe("Given I am a user connected as Employee", () => {
   describe("When I post a Bill", () => {
     test("Then I can find the bill on the bills page", async () => {
+
+      const newBill = {
+        "fileUrl": "https://localhost:3456/images/test.jpg"
+      }
+
+      const billsList = await realStore.bills().list()
+      const updateBill = await realStore.bills().create(newBill)
+      billsList.push(updateBill)
+
+      expect(updateBill).toMatchObject(newBill)
+      expect(billsList.length).toBe(5)
+
+    })
+     test("Then I am redirected to bills page", async () => {
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Employee',
@@ -92,14 +103,6 @@ describe("Given I am a user connected as Employee", () => {
       }
       const store = mockStore
       const newBill = new NewBill({ document, onNavigate, store, localStorage: window.localStorage})
-      const fileNewBill = screen.getByTestId('file')
-      const fakeFile = new File(['hello'], 'hello.png', { type: 'image/png' })
-      const handleChangeFile = jest.spyOn(newBill, 'handleChangeFile')
-      fileNewBill.addEventListener('change', handleChangeFile)
-      userEvent.upload(fileNewBill, fakeFile)
-      expect(handleChangeFile).toHaveBeenCalled()
-
-      await new Promise(process.nextTick)
 
       const fakeBill = {
         type: 'Transports',
@@ -114,14 +117,6 @@ describe("Given I am a user connected as Employee", () => {
         status: 'pending'
       }
 
-      /*fireEvent.change(screen.getByTestId('expense-type'), { target: { value: fakeBill.type } })
-      fireEvent.change(screen.getByTestId('expense-name'), { target: { value: fakeBill.name } })
-      fireEvent.change(screen.getByTestId('datepicker'), { target: { value: fakeBill.date } })
-      fireEvent.change(screen.getByTestId('amount'), { target: { value: fakeBill.amount } })
-      fireEvent.change(screen.getByTestId('vat'), { target: { value: fakeBill.vat } })
-      fireEvent.change(screen.getByTestId('pct'), { target: { value: fakeBill.pct } })
-      fireEvent.change(screen.getByTestId('commentary'), { target: { value: fakeBill.commentary } })*/
-
       screen.getByTestId('expense-type').value = fakeBill.type
       screen.getByTestId('expense-name').value = fakeBill.name
       screen.getByTestId('datepicker').value = fakeBill.date
@@ -132,10 +127,6 @@ describe("Given I am a user connected as Employee", () => {
 
       const formNewBill = screen.getByTestId('form-new-bill')
 
-      const billtry = new Bills({ document, onNavigate, store, localStorage: window.localStorage})
-      const getBills = jest.spyOn(billtry, 'getBills')
-      
-
       const handleSubmit = jest.spyOn(newBill, 'handleSubmit')
       formNewBill.addEventListener("submit", handleSubmit)
 
@@ -144,10 +135,10 @@ describe("Given I am a user connected as Employee", () => {
       expect(handleSubmit).toHaveBeenCalled()
 
       await new Promise(process.nextTick)
-      const bills = await billtry.getBills()
-      const message = screen.getByText('TEST POST OK')
+      
+      const message = screen.getByText('Mes notes de frais')
       expect(message).toBeTruthy()
 
-    })
+     })
   })
 })
